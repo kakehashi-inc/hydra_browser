@@ -18,68 +18,68 @@ export default function TitleBar({ info }: Props) {
                 display: 'flex',
                 alignItems: 'center',
                 px: 2,
-                height: 48,
+                height: 36,
                 bgcolor: 'background.paper',
                 borderBottom: 1,
                 borderColor: 'divider',
                 userSelect: 'none',
+                flexShrink: 0,
             }}
         >
             <Box sx={{ flexGrow: 1, ml: isMac ? 10 : 0, display: 'flex', alignItems: 'baseline', gap: 1 }}>
-                <Typography variant='body1' sx={{ fontWeight: 500, fontSize: '0.95rem' }}>
-                    Default App
+                <Typography variant='body2' sx={{ fontWeight: 500, fontSize: '0.85rem' }}>
+                    Hydra Browser
                 </Typography>
                 {info?.version && (
-                    <Typography variant='caption' sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                    <Typography variant='caption' sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
                         v{info.version}
                     </Typography>
                 )}
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', WebkitAppRegion: 'no-drag' }}>
-                {/* Window controls - macOSでは非表示 */}
                 {!isMac && (
                     <>
                         <IconButton
-                            size='medium'
+                            size='small'
                             onClick={() => window.hydra.minimize()}
                             sx={{
                                 borderRadius: 0,
-                                width: 48,
-                                height: 48,
+                                width: 36,
+                                height: 36,
                                 color: 'text.primary',
                                 '&:hover': { bgcolor: 'action.hover' },
                             }}
                         >
-                            <MinimizeIcon />
+                            <MinimizeIcon fontSize='small' />
                         </IconButton>
                         <IconButton
-                            size='medium'
+                            size='small'
                             onClick={async () => {
                                 await window.hydra.maximizeOrRestore();
                             }}
                             sx={{
                                 borderRadius: 0,
-                                width: 48,
-                                height: 48,
+                                width: 36,
+                                height: 36,
                                 color: 'text.primary',
                                 '&:hover': { bgcolor: 'action.hover' },
                             }}
                         >
-                            <CropSquareIcon />
+                            <CropSquareIcon fontSize='small' />
                         </IconButton>
                         <IconButton
-                            size='medium'
+                            size='small'
                             onClick={() => window.hydra.close()}
                             sx={{
                                 borderRadius: 0,
-                                width: 48,
-                                height: 48,
+                                width: 36,
+                                height: 36,
                                 color: 'text.primary',
                                 '&:hover': { bgcolor: 'error.main', color: 'error.contrastText' },
                             }}
                         >
-                            <CloseIcon />
+                            <CloseIcon fontSize='small' />
                         </IconButton>
                     </>
                 )}
