@@ -15,6 +15,9 @@ export default {
     closePane: '閉じる',
     // Add Pane Dialog
     addPaneTitle: '新しいペインを追加',
+    // Edit Pane Dialog
+    editPaneTitle: 'ペインを編集',
+    save: '保存',
     resolution: '解像度',
     scale: '表示スケール',
     partition: 'パーティション',
