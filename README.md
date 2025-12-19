@@ -38,8 +38,8 @@ Note: This project is not code-signed for Windows. If SmartScreen shows a warnin
 - When implementing models, place files per table.
 - Reusable components should be implemented in files under `modules`.
 - Temporary scripts (e.g., investigation scripts) should be placed in `scripts` directory.
-- When creating or modifying models, update `Documents/table-definition.md`. Express table definitions as tables with columns, types, and relations.
-- When system behavior changes, update `Documents/system-specification.md`.
+- When creating or modifying models, update `Documents/テーブル定義.md`. Express table definitions as tables with columns, types, and relations.
+- When system behavior changes, update `Documents/システム仕様.md`.
 
 ### Requirements
 

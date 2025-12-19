@@ -128,6 +128,12 @@ function createWindow() {
     mainWindow.on('close', () => {
         if (!mainWindow) return;
 
+        // If minimized, restore first to get the actual state
+        const isMinimized = mainWindow.isMinimized();
+        if (isMinimized) {
+            mainWindow.restore();
+        }
+
         const isMaximized = mainWindow.isMaximized();
         let windowState: WindowState;
 

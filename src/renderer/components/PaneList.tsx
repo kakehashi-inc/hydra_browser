@@ -1,3 +1,4 @@
+import React from 'react';
 import {
     Box,
     Typography,
@@ -11,8 +12,81 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../stores/useAppStore';
-import { CONSOLE_STATE_COLORS } from '../constants';
+import { CONSOLE_STATE_COLORS, SCALE_CONSTRAINTS } from '../constants';
 import type { PaneState } from '@shared/types';
+
+// Resize handle component
+interface ResizeHandleProps {
+    pane: PaneState;
+    onScaleChange: (newScale: number) => void;
+}
+
+function ResizeHandle({ pane, onScaleChange }: ResizeHandleProps) {
+    const handleMouseDown = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startScale = pane.scale;
+        const aspectRatio = pane.resolution.width / pane.resolution.height;
+
+        const handleMouseMove = (moveEvent: MouseEvent) => {
+            // Calculate delta based on diagonal movement (preserves aspect ratio)
+            const deltaX = moveEvent.clientX - startX;
+            const deltaY = moveEvent.clientY - startY;
+            // Use the larger of the two deltas, weighted by aspect ratio
+            const delta = (deltaX + deltaY * aspectRatio) / 2;
+
+            // Convert pixel delta to scale change (1px = 0.5% scale change)
+            const scaleChange = delta * 0.5;
+            let newScale = Math.round(startScale + scaleChange);
+
+            // Clamp to valid range
+            newScale = Math.max(SCALE_CONSTRAINTS.MIN, Math.min(SCALE_CONSTRAINTS.MAX, newScale));
+
+            onScaleChange(newScale);
+        };
+
+        const handleMouseUp = () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    };
+
+    return (
+        <Box
+            onMouseDown={handleMouseDown}
+            sx={{
+                position: 'absolute',
+                right: 0,
+                bottom: 0,
+                width: 16,
+                height: 16,
+                cursor: 'nwse-resize',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: 'action.hover',
+                borderTopLeftRadius: 4,
+                '&:hover': {
+                    bgcolor: 'action.selected',
+                },
+                '&::before': {
+                    content: '""',
+                    width: 8,
+                    height: 8,
+                    borderRight: '2px solid',
+                    borderBottom: '2px solid',
+                    borderColor: 'text.secondary',
+                },
+            }}
+        />
+    );
+}
 
 interface PaneTitleBarProps {
     pane: PaneState;
@@ -117,10 +191,11 @@ function PaneTitleBar({ pane, isFocused, onFocus, onClose, onToggleDevTools, onS
 interface PaneCardProps {
     pane: PaneState;
     isFocused: boolean;
+    onOpenSettings: (pane: PaneState) => void;
 }
 
-function PaneCard({ pane, isFocused }: PaneCardProps) {
-    const { setFocusedPaneId, removePane } = useAppStore();
+function PaneCard({ pane, isFocused, onOpenSettings }: PaneCardProps) {
+    const { setFocusedPaneId, removePane, updatePane } = useAppStore();
 
     const displayWidth = Math.round((pane.resolution.width * pane.scale) / 100);
     const displayHeight = Math.round((pane.resolution.height * pane.scale) / 100);
@@ -140,8 +215,14 @@ function PaneCard({ pane, isFocused }: PaneCardProps) {
     };
 
     const handleSettings = () => {
-        // TODO: Open pane settings dialog
-        console.log('Open settings for pane:', pane.id);
+        onOpenSettings(pane);
+    };
+
+    const handleScaleChange = async (newScale: number) => {
+        // Update local state immediately for responsive UI
+        updatePane({ ...pane, scale: newScale });
+        // Sync with main process
+        await window.hydra.updatePane(pane.id, { scale: newScale });
     };
 
     return (
@@ -163,6 +244,7 @@ function PaneCard({ pane, isFocused }: PaneCardProps) {
             <Paper
                 elevation={isFocused ? 4 : 1}
                 sx={{
+                    position: 'relative',
                     width: displayWidth,
                     height: displayHeight,
                     bgcolor: 'background.default',
@@ -220,12 +302,18 @@ function PaneCard({ pane, isFocused }: PaneCardProps) {
                         {pane.isLoading ? 'Loading...' : pane.url || 'about:blank'}
                     </Typography>
                 </Box>
+                {/* Resize handle */}
+                <ResizeHandle pane={pane} onScaleChange={handleScaleChange} />
             </Paper>
         </Box>
     );
 }
 
-export default function PaneList() {
+interface PaneListProps {
+    onOpenPaneSettings: (pane: PaneState) => void;
+}
+
+export default function PaneList({ onOpenPaneSettings }: PaneListProps) {
     const { panes, focusedPaneId } = useAppStore();
 
     return (
@@ -245,6 +333,7 @@ export default function PaneList() {
                     key={pane.id}
                     pane={pane}
                     isFocused={pane.id === focusedPaneId}
+                    onOpenSettings={onOpenPaneSettings}
                 />
             ))}
             {panes.length === 0 && (

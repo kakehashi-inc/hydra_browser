@@ -15,6 +15,9 @@ export default {
     closePane: 'Close',
     // Add Pane Dialog
     addPaneTitle: 'Add New Pane',
+    // Edit Pane Dialog
+    editPaneTitle: 'Edit Pane',
+    save: 'Save',
     resolution: 'Resolution',
     scale: 'Scale',
     partition: 'Partition',

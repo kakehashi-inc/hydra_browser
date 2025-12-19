@@ -8,6 +8,7 @@ import TitleBar from './components/TitleBar';
 import Toolbar from './components/Toolbar';
 import PaneList from './components/PaneList';
 import AddPaneDialog from './components/AddPaneDialog';
+import EditPaneDialog from './components/EditPaneDialog';
 import DownloadPanel from './components/DownloadPanel';
 import SettingsDialog from './components/SettingsDialog';
 import { useAppStore } from './stores/useAppStore';
@@ -115,6 +116,20 @@ function App() {
         };
     }, [updatePane, setFocusedPaneId, addPane, removePane, addDownload, updateDownload, setUrlBarValue]);
 
+    // Edit pane dialog state
+    const [editPaneDialogOpen, setEditPaneDialogOpen] = React.useState(false);
+    const [editingPane, setEditingPane] = React.useState<PaneState | null>(null);
+
+    const handleOpenPaneSettings = (pane: PaneState) => {
+        setEditingPane(pane);
+        setEditPaneDialogOpen(true);
+    };
+
+    const handleCloseEditPaneDialog = () => {
+        setEditPaneDialogOpen(false);
+        setEditingPane(null);
+    };
+
     const muiTheme = React.useMemo(
         () =>
             createTheme({
@@ -131,9 +146,14 @@ function App() {
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                 <TitleBar info={appInfo ?? undefined} />
                 <Toolbar />
-                <PaneList />
+                <PaneList onOpenPaneSettings={handleOpenPaneSettings} />
             </Box>
             <AddPaneDialog />
+            <EditPaneDialog
+                pane={editingPane}
+                open={editPaneDialogOpen}
+                onClose={handleCloseEditPaneDialog}
+            />
             <DownloadPanel />
             <SettingsDialog />
         </ThemeProvider>
