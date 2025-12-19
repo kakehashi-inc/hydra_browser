@@ -55,7 +55,7 @@ Loop:
 
 <project_details>
 <instruction>
-CRITICAL: You MUST read the current content of [README.md](README.md) BEFORE taking any action.
-You MUST strictly adhere to the "Development Rules" (開発ルール) section within README.md.
+CRITICAL: You MUST read the current content of [README-ja.md](README-ja.md) BEFORE taking any action.
+You MUST strictly adhere to the "Development Rules" (開発ルール) section within README-ja.md.
 </instruction>
 </project_details>
