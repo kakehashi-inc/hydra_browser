@@ -4,10 +4,7 @@
   "description": "Hydra Browser",
   "main": "dist/main/index.js",
   "engines": {
-    "node": ">=22.0.0",
-    "yarn": ">=4.0.0",
-    "npm": "please-use-yarn",
-    "pnpm": "please-use-yarn"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "dev": "concurrently -k -r \"yarn run dev:main\" \"yarn run dev:renderer\" \"yarn run dev:electron\"",
